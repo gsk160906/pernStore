@@ -5,7 +5,7 @@ export const aj =  arcjet({
     key:process.env.ARCJET_KEY,
     characteristics:["ip.src"],
     rules:[
-        // Shield protects your app from common attacks e.g. SQL injection
+        // Shield protects your app from common attacks e.g. SQL injection,Cross site scripting ,Cross site Request forgery
         shield({
             mode:"LIVE"
         }),

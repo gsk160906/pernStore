@@ -17,7 +17,7 @@ const __dirname = path.resolve();
 
 
 app.use(express.json());
-app.use(cors());
+app.use(cors()); //cross origin resource sharing
 app.use(helmet({
     contentSecurityPolicy:false,
 })); //helmet is a security middleware that helps you protect your app by setting various HTTP headers
