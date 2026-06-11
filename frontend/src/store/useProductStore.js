@@ -79,6 +79,7 @@ export const useProductStore = create((set,get)=>({
                 formData: response.data.data,
                 error:null,
             });
+            
         } catch (error) {
             console.log("Error in fetchProduct",error);
         } finally{

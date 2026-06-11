@@ -13,6 +13,7 @@ function ProductPage() {
     fetchProduct,
     updateProduct,
     deleteProduct,
+    resetForm,
   } = useProductStore();
 
   const navigate = useNavigate();
@@ -21,7 +22,10 @@ function ProductPage() {
 
   useEffect(()=>{
     fetchProduct(id);
-  },[fetchProduct,id]);
+    return () => {
+    resetForm();
+  };
+  },[fetchProduct,id,resetForm]);
 
   const handleDelete = async () => {
     if (window.confirm("Are you sure you want to delete this product?")) {
