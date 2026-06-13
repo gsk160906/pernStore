@@ -20,7 +20,7 @@ const __dirname = path.resolve();
 
 app.use(express.json());
 app.use(cors({
-origin: process.env.CLIENT_URL,
+origin: "http://localhost:5173",
   credentials: true,
 })); //cross origin resource sharing
 app.use(helmet({
