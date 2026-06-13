@@ -1,15 +1,40 @@
-import { Link, useResolvedPath } from "react-router-dom";
-import {ShoppingCartIcon,ShoppingBagIcon} from "lucide-react"
+import { Link, useResolvedPath,useNavigate} from "react-router-dom";
+import { useState } from "react";
+import {ShoppingCartIcon,ShoppingBagIcon,LogOutIcon} from "lucide-react"
 import ThemeSelector from "./ThemeSelector";
 import { useThemeStore } from "../store/useThemeStore";
 import { useProductStore } from "../store/useProductStore";
+import axios from "axios";
+
 
 
 function Navbar() {
     const { pathname } = useResolvedPath();
     const isHomePage = pathname === "/";
+    const [loading, setLoading] = useState(false);
 
     const {products} = useProductStore();
+    const navigate = useNavigate();
+
+    
+    const handleLogout = async()=>{
+        try {
+            setLoading(true);
+
+            const res = await axios.get(
+            "http://localhost:3000/api/auth/logout",
+            { withCredentials: true }
+            );
+
+            if (res.data.success) {
+            navigate("/login");
+            }
+        } catch (err) {
+            console.log(err);
+        } finally {
+            setLoading(false);
+        }
+      }
 
   return (
     <div className='bg-base-100/80 backdrop-blur-lg border-b border-base-content/10 sticky top-0 z-50'>
@@ -18,7 +43,7 @@ function Navbar() {
                 {/* LOGO */}
                 <div className="flex-1 lg:flex-none">
                     <Link to="/" className="hover:opacity-80 transition-opacity">
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-4">
                         <ShoppingCartIcon className="size-9 text-primary" />
                         <span
                         className="font-semibold font-mono tracking-widest text-2xl 
@@ -26,6 +51,20 @@ function Navbar() {
                         >
                         POSGRESTORE
                         </span>
+                        <button
+                        onClick={handleLogout}
+                        className="btn btn-sm btn-outline btn-error"
+                        disabled={loading}
+                        >
+                        {loading ? (
+                            <span className="loading loading-spinner loading-xs"></span>
+                        ) : (
+                            <>
+                            <LogOutIcon className="size-4" />
+                            Logout
+                            </>
+                        )}
+                        </button>
                     </div>
                     </Link>
                 </div>

@@ -4,8 +4,10 @@ import morgan from "morgan";
 import cors from "cors";
 import dotenv from "dotenv";
 import path from "path";
+import cookieParser from "cookie-parser";
 
 import productRoutes from "./routes/productRoutes.js";
+import authRoutes from "./routes/authRoutes.js";
 import { sql } from "./config/db.js";
 import { aj } from "./lib/arcjet.js";
 
@@ -17,11 +19,15 @@ const __dirname = path.resolve();
 
 
 app.use(express.json());
-app.use(cors()); //cross origin resource sharing
+app.use(cors({
+origin: "http://localhost:5173",
+  credentials: true,
+})); //cross origin resource sharing
 app.use(helmet({
     contentSecurityPolicy:false,
 })); //helmet is a security middleware that helps you protect your app by setting various HTTP headers
 app.use(morgan("dev")); //logs the request everytime when we request in browser
+app.use(cookieParser());
 
 app.use(async (req,res,next)=>{
     try {
@@ -53,11 +59,13 @@ app.use(async (req,res,next)=>{
     }
 })
 
+app.use("/api/auth", authRoutes);
+
 app.use("/api/products",productRoutes);
 
 if (process.env.NODE_ENV === "production") {
 
-    app.use(express.static(path.join(__dirname, "frontend", "dist")));
+    app.use(express.static(path.join(__dirname, "/frontend/dist")));
 
     app.get("/{*any}", (req, res) => {
         res.sendFile(
@@ -68,12 +76,27 @@ if (process.env.NODE_ENV === "production") {
 
 async function initDB(){
     try {
-        await sql `
+        await sql`
+            CREATE TABLE IF NOT EXISTS users (
+                id SERIAL PRIMARY KEY,
+                username VARCHAR(255) NOT NULL,
+                email VARCHAR(255) UNIQUE NOT NULL,
+                password VARCHAR(255) NOT NULL,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        `;
+
+        await sql`
             CREATE TABLE IF NOT EXISTS products (
                 id SERIAL PRIMARY KEY,
                 name VARCHAR(255) NOT NULL,
                 image VARCHAR(255) NOT NULL,
-                price DECIMAL(10, 2) NOT NULL,
+                price DECIMAL(10,2) NOT NULL,
+
+                user_id INTEGER NOT NULL
+                REFERENCES users(id)
+                ON DELETE CASCADE,
+
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )
         `;

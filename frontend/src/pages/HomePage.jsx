@@ -1,19 +1,64 @@
-import React, { use, useEffect } from 'react'
+import React, { use, useEffect,useState} from 'react'
+import { useNavigate } from 'react-router-dom';
 import { useProductStore } from '../store/useProductStore';
 import {PlusCircleIcon,RefreshCwIcon,PackageIcon} from "lucide-react"; 
+import axios from "axios";
 import ProductCard from '../components/ProductCard';
+import Navbar from '../components/Navbar';
 import AddProductModal from '../components/AddProductModal';
 
 function HomePage() {
   const {products,loading,error,fetchProducts} = useProductStore();
+  const [auth,setAuth] = useState(false);
+  const [name,setName] = useState('');
+  const [checkingAuth, setCheckingAuth] = useState(true);
+  const navigate = useNavigate();
 
-  useEffect(()=>{
-    fetchProducts()
-  },[fetchProducts])
+   useEffect(()=>{
+    axios.get("http://localhost:3000/api/products",{withCredentials:true})
+        .then(res => {
+            if(res.data.success){
+                setAuth(true);
+                console.log(res.data);
+                setName(res.data.name);
+            }
+            else{
+                navigate('/login');
+            }
+        })
+        .catch((err) => {
+      console.log(err);
+      navigate("/login");
+    })
+    .finally(()=>{
+      setCheckingAuth(false);
+    })
+}, [navigate]);
+
+
+
+ useEffect(() => {
+    if (auth) {
+      fetchProducts();
+    }
+  }, [auth, fetchProducts]);
   
+  if (checkingAuth) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <div className="loading loading-spinner loading-lg"></div>
+      </div>
+    );
+  }
+
+  if (!auth) {
+    return null;
+  }
+
 
   return (
     <main className='max-w-6xl mx-auto px-4 py-8'>
+      <Navbar />
       <div className="flex justify-between items-center mb-8">
         <button
           className="btn btn-primary"

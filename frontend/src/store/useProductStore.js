@@ -29,7 +29,7 @@ export const useProductStore = create((set,get)=>({
 
         try {
             const {formData} = get();
-            await axios.post(`${BASE_URL}/api/products`,formData);
+            await axios.post(`${BASE_URL}/api/products`,formData,{withCredentials:true});
             await get().fetchProducts();
             get().resetForm();
             toast.success("product added");
@@ -45,7 +45,7 @@ export const useProductStore = create((set,get)=>({
     fetchProducts: async()=>{
         set({loading:true});
         try { 
-            const response = await axios.get(`${BASE_URL}/api/products`)
+            const response = await axios.get(`${BASE_URL}/api/products`,{withCredentials:true})
             set({products:response.data.data,error:null});
         } catch (err) {
             if(err.status == 429) set({error:"Rate Limit Exceeded",products:[]});
@@ -58,7 +58,7 @@ export const useProductStore = create((set,get)=>({
     deleteProduct : async(id)=>{
         set({loading:true});
         try{
-        await axios.delete(`${BASE_URL}/api/products/${id}`);
+        await axios.delete(`${BASE_URL}/api/products/${id}`,{withCredentials:true});
         set(prev => ({products: prev.products.filter((product) => product.id !== id)}))
         toast.success("Product deleted successfully");
         }
@@ -74,7 +74,7 @@ export const useProductStore = create((set,get)=>({
     fetchProduct: async(id)=>{
         set({loading:true});
         try {
-            const  response = await axios.get(`${BASE_URL}/api/products/${id}`);
+            const  response = await axios.get(`${BASE_URL}/api/products/${id}`,{withCredentials:true});
             set ({currentProduct:response.data.data,
                 formData: response.data.data,
                 error:null,
@@ -92,7 +92,7 @@ export const useProductStore = create((set,get)=>({
         set({loading:true});
         try {
             const {formData}= get();
-            const response = await axios.put(`${BASE_URL}/api/products/${id}`,formData);         
+            const response = await axios.put(`${BASE_URL}/api/products/${id}`,formData,{withCredentials:true});         
             set({currentProduct: response.data.data});
             toast.success("product epdated successfully");
         }catch(error){
