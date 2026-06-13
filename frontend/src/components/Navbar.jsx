@@ -5,6 +5,7 @@ import ThemeSelector from "./ThemeSelector";
 import { useThemeStore } from "../store/useThemeStore";
 import { useProductStore } from "../store/useProductStore";
 import axios from "axios";
+import { API_URL } from "../lib/api";
 
 
 
@@ -22,7 +23,7 @@ function Navbar() {
             setLoading(true);
 
             const res = await axios.get(
-            "http://localhost:3000/api/auth/logout",
+            `${API_URL}/api/auth/logout`,
             { withCredentials: true }
             );
 

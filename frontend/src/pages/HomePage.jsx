@@ -6,6 +6,7 @@ import axios from "axios";
 import ProductCard from '../components/ProductCard';
 import Navbar from '../components/Navbar';
 import AddProductModal from '../components/AddProductModal';
+import { API_URL } from "../lib/api";
 
 function HomePage() {
   const {products,loading,error,fetchProducts} = useProductStore();
@@ -15,8 +16,9 @@ function HomePage() {
   const navigate = useNavigate();
 
    useEffect(()=>{
-    axios.get("http://localhost:3000/api/products",{withCredentials:true})
+    axios.get(`${API_URL}/api/products`,{withCredentials:true})
         .then(res => {
+          console.log("AUTH CHECK:", res.data);
             if(res.data.success){
                 setAuth(true);
                 console.log(res.data);
@@ -27,6 +29,7 @@ function HomePage() {
             }
         })
         .catch((err) => {
+          console.log("AUTH ERROR:", err.response?.status);
       console.log(err);
       navigate("/login");
     })

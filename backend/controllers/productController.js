@@ -8,7 +8,7 @@ export const getAllProducts = async (req,res)=>{
         const userId = req.user.id;
         const products = await sql `SELECT * FROM products WHERE user_id=${userId} ORDER BY created_at DESC`;
         console.log("Fetched Products",products);
-        res.status(200).json({success:true,data:products,name:req.username});
+        res.status(200).json({success:true,data:products,name:req.user.username});
         
     } catch (error) {
         console.log("Error getProducts",error);
